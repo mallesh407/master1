@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<!--
+BEA Education Services Lab Framework
+File:     build.xml
+Author:   TJ Palazzolo
+Modified: September 7, 2005
+Description:
+This simple convenience script forwards an event to the Lab Framework dispatcher.
+The script also provides the dispatcher with the current location on this lab on the file system.
+The event name must be supplied as a system property when executing this script, using the -D Ant argument.
+-->
+<project default="main">
+
+	<!-- The default target -->
+	<target name="main" description="The default target. Supply an event to execute.">
+		<!-- Check for event argument -->
+		<condition property="foundEventName">
+			<isset property="event" />
+		</condition>
+		<fail unless="foundEventName" message="Missing required argument 'event'" />
+
+		<!-- Save the event name supplied by the user -->
+		<property name="edlab.eventName" value="${event}" />
+
+		<!-- Save the current path -->
+		<property name="edlab.eventPath" value="${basedir}" />
+
+		<!-- Create log file -->
+		<basename file="${edlab.eventPath}" property="edlab.eventPathDir"/>
+		<property name="edlab.logFile" value="logs/edlab_${edlab.eventPathDir}_${edlab.eventName}.log" />
+
+		<!-- Call the dispatcher -->
+		<ant antfile="dispatcher.xml" dir="../../edlab" inheritall="true" output="${edlab.logFile}" />
+	</target>
+
+	<target name="setup_exercise" description="Convenience target. Triggers the event setup_exercise.">
+		<property name="event" value="setup_exercise" />
+		<antcall target="main" inheritall="true" />
+	</target>
+
+	<target name="setup_solution" description="Convenience target. Triggers the event setup_solution.">
+		<property name="event" value="setup_solution" />
+		<antcall target="main" inheritall="true" />
+	</target>
+
+	<target name="continue_exercise" description="Convenience target. Triggers the event continue_exercise.">
+		<property name="event" value="continue_exercise" />
+		<antcall target="main" inheritall="true" />
+	</target>
+</project>
